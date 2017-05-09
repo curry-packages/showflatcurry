@@ -103,8 +103,8 @@ showInterface genstub (Prog mod imports types funcs ops) = unlines $
   (if null ops then [] else [""]) ++
   concatMap (showInterfaceType (showQNameInModule mod))
             (sortBy leqType types) ++ [""] ++
-  map (showInterfaceFunc (showQNameInModule mod) genstub)
-      (sortBy leqFunc funcs)
+  concatMap (showInterfaceFunc (showQNameInModule mod) genstub)
+            (sortBy leqFunc funcs)
 
 -- Get a FlatCurry program (parse only if necessary):
 getFlatInt :: String -> IO Prog
@@ -165,13 +165,13 @@ showExportConsDecl tt (Cons (_,cname) _ _ argtypes) =
 
 -- show function type declaration if it is not an internal
 -- operation to implement type classes
-showInterfaceFunc :: (QName -> String) -> Bool -> FuncDecl -> String
+showInterfaceFunc :: (QName -> String) -> Bool -> FuncDecl -> [String]
 showInterfaceFunc ttrans genstub (Func (_,fname) _ vis ftype _) =
   if vis==Public && not (classOperations fname)
-  then showCurryId fname ++ " :: " ++
-       showCurryType ttrans False ftype ++
-       (if genstub then "\n" ++ showCurryId fname ++ " external\n" else "")
-  else ""
+  then [showCurryId fname ++ " :: " ++
+        showCurryType ttrans False ftype ++
+        (if genstub then "\n" ++ showCurryId fname ++ " external\n" else "")]
+  else []
  where
   classOperations fn = take 6 fn `elem` ["_impl#","_inst#"]
                     || take 5 fn == "_def#" || take 7 fn == "_super#"
