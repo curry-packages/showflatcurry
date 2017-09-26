@@ -4,7 +4,9 @@
     "author": "Michael Hanus <mh@informatik.uni-kiel.de>",
     "synopsis": "Library and tool to show FlatCurry programs in human-readable (Curry-like) form",
     "category": [ "Programming", "Metaprogramming" ],
-    "dependencies": { },
+    "dependencies": {
+        "flatcurry": ">= 1.0.0"
+    },
     "compilerCompatibility": {
         "pakcs": ">= 1.14.0",
         "kics2": ">= 0.5.0"
