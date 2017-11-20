@@ -28,7 +28,6 @@ import Distribution (stripCurrySuffix, modNameToPath
                     ,lookupModuleSourceInLoadPath)
 import FilePath     (takeFileName, (</>))
 import List         (intercalate)
-import Pretty             (pPrint)
 import Sort         (sortBy, leqString)
 import System       (getArgs, getEnviron, system)
 
@@ -37,6 +36,8 @@ import FlatCurry.Files
 import FlatCurry.Goodies (funcName)
 import FlatCurry.Pretty  (Options (..), defaultOptions, ppProg, ppFuncDecl)
 import FlatCurry.Show
+import Text.Pretty       (pPrint)
+
 
 main :: IO ()
 main = do
