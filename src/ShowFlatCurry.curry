@@ -22,21 +22,22 @@ module ShowFlatCurry
  , funcModule, leqFunc
  ) where
 
-import Char         (isAlpha)
-import Directory    (doesFileExist, getModificationTime)
-import Distribution (stripCurrySuffix, modNameToPath
-                    ,lookupModuleSourceInLoadPath)
-import FilePath     (takeFileName, (</>))
-import List         (intercalate)
-import Sort         (sortBy, leqString)
-import System       (getArgs, getEnviron, system)
+import Data.Char          (isAlpha)
+import Data.List          (intercalate)
+import System.Directory   (doesFileExist, getModificationTime)
+import System.FilePath    (takeFileName, (</>))
+import System.Process     (system)
+import System.Environment (getArgs)
+import Sort               (sortBy, leqString)
+import Distribution       (stripCurrySuffix, modNameToPath
+                          ,lookupModuleSourceInLoadPath)
 
 import FlatCurry.Types
 import FlatCurry.Files
-import FlatCurry.Goodies (funcName)
-import FlatCurry.Pretty  (Options (..), defaultOptions, ppProg, ppFuncDecl)
+import FlatCurry.Goodies  (funcName)
+import FlatCurry.Pretty   (Options (..), defaultOptions, ppProg, ppFuncDecl)
 import FlatCurry.Show
-import Text.Pretty       (pPrint)
+import Text.Pretty        (pPrint)
 
 
 main :: IO ()
@@ -149,7 +150,7 @@ showInterfaceType tt (Type (_,tcons) vis tvars constrs) =
   else []
  where
   isDict fn = take 6 fn == "_Dict#"
-  
+
   constxt = intercalate " | "
               (map (showExportConsDecl tt)
                    (filter (\ (Cons _ _ cvis _)->cvis==Public) constrs))
@@ -176,7 +177,7 @@ showInterfaceFunc ttrans genstub (Func (_,fname) _ vis ftype _) =
  where
   classOperations fn = take 6 fn `elem` ["_impl#","_inst#"]
                     || take 5 fn == "_def#" || take 7 fn == "_super#"
-  
+
 ---------------------------------------------------------------------------
 -- generate a human-readable representation of a Curry module:
 
