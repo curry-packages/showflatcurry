@@ -13,7 +13,7 @@
 --- generated from a FlatCurry program.
 ---
 --- @author Michael Hanus
---- @version August 2016
+--- @version December 2018
 ------------------------------------------------------------------------------
 
 module ShowFlatCurry
@@ -22,21 +22,21 @@ module ShowFlatCurry
  , funcModule, leqFunc
  ) where
 
-import Char         (isAlpha)
-import Directory    (doesFileExist, getModificationTime)
-import Distribution (stripCurrySuffix, modNameToPath
-                    ,lookupModuleSourceInLoadPath)
-import FilePath     (takeFileName, (</>))
-import List         (intercalate)
-import Sort         (sortBy, leqString)
-import System       (getArgs, getEnviron, system)
+import Char         ( isAlpha )
+import Directory    ( doesFileExist, getModificationTime )
+import FilePath     ( takeFileName, (</>) )
+import List         ( intercalate )
+import Sort         ( sortBy, leqString )
+import System       ( getArgs, getEnviron, system )
 
 import FlatCurry.Types
 import FlatCurry.Files
-import FlatCurry.Goodies (funcName)
-import FlatCurry.Pretty  (Options (..), defaultOptions, ppProg, ppFuncDecl)
+import FlatCurry.Goodies ( funcName )
+import FlatCurry.Pretty  ( Options (..), defaultOptions, ppProg, ppFuncDecl )
 import FlatCurry.Show
-import Text.Pretty       (pPrint)
+import System.CurryPath  ( stripCurrySuffix, modNameToPath
+                         , lookupModuleSourceInLoadPath )
+import Text.Pretty       ( pPrint )
 
 
 main :: IO ()

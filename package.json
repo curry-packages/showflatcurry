@@ -5,8 +5,10 @@
     "synopsis": "Library and tool to show FlatCurry programs in human-readable (Curry-like) form",
     "category": [ "Programming", "Metaprogramming" ],
     "dependencies": {
-        "flatcurry": ">= 2.0.0",
-        "wl-pprint": ">= 0.0.1"
+        "base"      : ">= 1.0.0, < 2.0.0",
+        "currypath" : ">= 0.0.1",
+        "flatcurry" : ">= 2.0.0",
+        "wl-pprint" : ">= 0.0.1"
     },
     "compilerCompatibility": {
         "pakcs": ">= 2.0.0",
