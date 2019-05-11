@@ -22,14 +22,14 @@ module ShowFlatCurry
  , funcModule, leqFunc
  ) where
 
+import Prelude     hiding (empty)
 import Data.Char          (isAlpha)
-import Data.List          (intercalate)
+import Data.List          (intercalate, sortBy)
 import System.Directory   (doesFileExist, getModificationTime)
 import System.FilePath    (takeFileName, (</>))
 import System.Process     (system)
 import System.Environment (getArgs)
-import Sort               (sortBy, leqString)
-import Distribution       (stripCurrySuffix, modNameToPath
+import System.CurryPath   (stripCurrySuffix, modNameToPath
                           ,lookupModuleSourceInLoadPath)
 
 import FlatCurry.Types
