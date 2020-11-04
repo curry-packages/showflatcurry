@@ -54,19 +54,19 @@ main = do
 
 -- print interface on stdout:
 printInterface :: String -> IO ()
-printInterface progname =
-  do intstring <- genInt False progname
-     putStrLn ("Interface of module \""++progname++"\":\n")
-     putStrLn intstring
+printInterface progname = do
+  intstring <- genInt False progname
+  putStrLn ("Interface of module \"" ++ progname ++ "\":\n")
+  putStrLn intstring
 
 -- write interface into target file:
 writeInterface :: String -> String -> IO ()
-writeInterface targetfile progname =
-  do intstring <- genInt True progname
-     writeFile targetfile
-               ("--Interface of module \""++progname++"\":\n\n"++
-                intstring)
-     putStrLn ("Interface written into file \""++targetfile++"\"")
+writeInterface targetfile progname = do
+  intstring <- genInt True progname
+  writeFile targetfile
+            ("--Interface of module \"" ++ progname ++ "\":\n\n" ++
+             intstring)
+  putStrLn ("Interface written into file \"" ++ targetfile ++ "\"")
 
 
 -----------------------------------------------------------------------
@@ -121,19 +121,19 @@ getFlatInt modname = do
     then readFlatCurryInt modname
     else do ctime <- getModificationTime progname
             ftime <- getModificationTime fintprogname
+            print (ctime,ftime)
             if ctime>ftime
-             then readFlatCurryInt modname
-             else readFlatCurryFile fintprogname
+              then readFlatCurryInt modname
+              else readFlatCurryFile fintprogname
 
 -- write import declaration
 showInterfaceImport :: String -> [String]
-showInterfaceImport impmod = if impmod=="Prelude"
-                             then []
-                             else ["import "++impmod]
+showInterfaceImport impmod | impmod == "Prelude" = []
+                           | otherwise           = ["import " ++ impmod]
 
 -- show operator declaration
 showInterfaceOpDecl :: OpDecl -> String
-showInterfaceOpDecl (Op op InfixOp  prec) = "infix "++show prec++" "++showOp op
+showInterfaceOpDecl (Op op InfixOp  prec) = "infix " ++show prec++" "++showOp op
 showInterfaceOpDecl (Op op InfixlOp prec) = "infixl "++show prec++" "++showOp op
 showInterfaceOpDecl (Op op InfixrOp prec) = "infixr "++show prec++" "++showOp op
 
