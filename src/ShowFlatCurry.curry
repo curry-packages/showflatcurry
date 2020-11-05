@@ -121,7 +121,6 @@ getFlatInt modname = do
     then readFlatCurryInt modname
     else do ctime <- getModificationTime progname
             ftime <- getModificationTime fintprogname
-            print (ctime,ftime)
             if ctime>ftime
               then readFlatCurryInt modname
               else readFlatCurryFile fintprogname
