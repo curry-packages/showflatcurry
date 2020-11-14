@@ -13,7 +13,7 @@
 --- generated from a FlatCurry program.
 ---
 --- @author Michael Hanus
---- @version August 2016
+--- @version Noember 2020
 ------------------------------------------------------------------------------
 
 module ShowFlatCurry
@@ -144,9 +144,9 @@ showOp (_,on) = if isAlpha (head on) then '`':on++"`"
 showInterfaceType :: (QName -> String) -> TypeDecl -> [String]
 showInterfaceType tt (Type (_,tcons) vis tvars constrs) =
   if vis==Public && not (isDict tcons)
-  then ["data " ++ tcons ++ concatMap (\i->[' ',chr (97+i)]) tvars ++
-        (if null constxt then "" else " = " ++ constxt)]
-  else []
+    then ["data " ++ tcons ++ concatMap (\(i,_) -> [' ',chr (97+i)]) tvars ++
+          (if null constxt then "" else " = " ++ constxt)]
+    else []
  where
   isDict fn = take 6 fn == "_Dict#"
 
@@ -156,9 +156,9 @@ showInterfaceType tt (Type (_,tcons) vis tvars constrs) =
 
 showInterfaceType tt (TypeSyn (_,tcons) vis tvars texp) =
   if vis==Public
-  then ["type " ++ tcons ++ concatMap (\i->[' ',chr (97+i)]) tvars ++
-        " = " ++ showCurryType tt True texp]
-  else []
+    then ["type " ++ tcons ++ concatMap (\(i,_) -> [' ',chr (97+i)]) tvars ++
+          " = " ++ showCurryType tt True texp]
+    else []
 
 showExportConsDecl :: (QName -> String) -> ConsDecl -> String
 showExportConsDecl tt (Cons (_,cname) _ _ argtypes) =
@@ -233,11 +233,11 @@ showFuncExports funcs = intercalate "," (concatMap expfun funcs)
 
 showCurryDataDecl :: (QName -> String) -> TypeDecl -> String
 showCurryDataDecl tt (Type tcons _ tvars constrs) =
-  "data " ++ snd tcons ++ concatMap (\i->[' ',chr (97+i)]) tvars ++
+  "data " ++ snd tcons ++ concatMap (\(i,_) -> [' ',chr (97+i)]) tvars ++
   (if null constxt then "" else " = " ++ constxt)
  where constxt = intercalate " | " (map (showCurryConsDecl tt) constrs)
 showCurryDataDecl tt (TypeSyn tcons _ tvars texp) =
-  "type " ++ snd tcons ++ concatMap (\i->[' ',chr (97+i)]) tvars ++
+  "type " ++ snd tcons ++ concatMap (\(i,_) -> [' ',chr (97+i)]) tvars ++
   " = " ++ showCurryType tt True texp
 
 showCurryConsDecl :: (QName -> String) -> ConsDecl -> String
