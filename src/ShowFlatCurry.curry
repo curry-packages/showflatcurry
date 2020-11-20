@@ -144,7 +144,7 @@ showOp (_,on) = if isAlpha (head on) then '`':on++"`"
 showInterfaceType :: (QName -> String) -> TypeDecl -> [String]
 showInterfaceType tt (Type (_,tcons) vis tvars constrs) =
   if vis==Public && not (isDict tcons)
-    then ["data " ++ tcons ++ concatMap (\(i,_) -> [' ',chr (97+i)]) tvars ++
+    then ["data " ++ tcons ++ concatMap (\(i,_) -> [' ', chr (97+i)]) tvars ++
           (if null constxt then "" else " = " ++ constxt)]
     else []
  where
@@ -156,13 +156,20 @@ showInterfaceType tt (Type (_,tcons) vis tvars constrs) =
 
 showInterfaceType tt (TypeSyn (_,tcons) vis tvars texp) =
   if vis==Public
-    then ["type " ++ tcons ++ concatMap (\(i,_) -> [' ',chr (97+i)]) tvars ++
+    then ["type " ++ tcons ++ concatMap (\(i,_) -> [' ', chr (97+i)]) tvars ++
           " = " ++ showCurryType tt True texp]
+    else []
+
+showInterfaceType tt (TypeNew (_,tcons) vis tvars newconsdecl) =
+  if vis==Public
+    then ["newtype " ++ tcons ++
+           concatMap (\ (i,_) -> [' ', chr (97+i)]) tvars ++
+          " = " ++ showCurryNewConsDecl tt newconsdecl]
     else []
 
 showExportConsDecl :: (QName -> String) -> ConsDecl -> String
 showExportConsDecl tt (Cons (_,cname) _ _ argtypes) =
-  cname ++ concatMap (\t->" "++showCurryType tt True t) argtypes
+  cname ++ concatMap (\t -> " " ++ showCurryType tt True t) argtypes
 
 -- show function type declaration if it is not an internal
 -- operation to implement type classes
@@ -217,14 +224,19 @@ showCurryModule (Prog mod imports types funcs ops) = unlines $
 showTypeExports :: [TypeDecl] -> String
 showTypeExports types = concatMap (++",") (concatMap exptype types)
  where
-   exptype (Type tcons vis _ cdecls) =
-     if vis==Public
-     then [snd tcons++let cs = expcons cdecls in (if cs=="()" then "" else cs)]
-     else []
-   exptype (TypeSyn tcons vis _ _) = if vis==Public then [snd tcons] else []
+  exptype (Type tcons vis _ cdecls) =
+    if vis == Public
+      then [snd tcons ++
+            let cs = expcons cdecls in (if cs=="()" then "" else cs)]
+      else []
+  exptype (TypeSyn tcons vis _ _) = if vis==Public then [snd tcons] else []
+  exptype (TypeNew tcons vis _ (NewCons _ ncvis _)) =
+    if vis == Public
+      then [snd tcons ++ if ncvis == Public then "(..)" else ""]
+      else []
 
-   expcons cds = "(" ++ intercalate "," (concatMap expc cds) ++ ")"
-   expc (Cons cname _ vis _) = if vis==Public then [snd cname] else []
+  expcons cds = "(" ++ intercalate "," (concatMap expc cds) ++ ")"
+  expc (Cons cname _ vis _) = if vis==Public then [snd cname] else []
 
 showFuncExports :: [FuncDecl] -> String
 showFuncExports funcs = intercalate "," (concatMap expfun funcs)
@@ -239,10 +251,17 @@ showCurryDataDecl tt (Type tcons _ tvars constrs) =
 showCurryDataDecl tt (TypeSyn tcons _ tvars texp) =
   "type " ++ snd tcons ++ concatMap (\(i,_) -> [' ',chr (97+i)]) tvars ++
   " = " ++ showCurryType tt True texp
+showCurryDataDecl tt (TypeNew tcons _ tvars newconsdecl) =
+  "newtype " ++ snd tcons ++ concatMap (\(i,_) -> [' ',chr (97+i)]) tvars ++
+  " = " ++ showCurryNewConsDecl tt newconsdecl
 
 showCurryConsDecl :: (QName -> String) -> ConsDecl -> String
 showCurryConsDecl tt (Cons cname _ _ argtypes) =
-  snd cname ++ concatMap (\t->" "++showCurryType tt True t) argtypes
+  snd cname ++ concatMap (\t->" "++ showCurryType tt True t) argtypes
+
+showCurryNewConsDecl :: (QName -> String) -> NewConsDecl -> String
+showCurryNewConsDecl tt (NewCons cname _ texp) =
+  snd cname ++ " " ++ showCurryType tt True texp
 
 
 -- generate function definitions:
@@ -351,6 +370,7 @@ leqType :: TypeDecl -> TypeDecl -> Bool
 leqType t1 t2 = (tname t1) <= (tname t2)
  where tname (Type    (_,tn) _ _ _) = tn
        tname (TypeSyn (_,tn) _ _ _) = tn
+       tname (TypeNew (_,tn) _ _ _) = tn
 
 leqFunc :: FuncDecl -> FuncDecl -> Bool
 leqFunc (Func (_,f1) _ _ _ _) (Func (_,f2) _ _ _ _) = f1 <= f2
