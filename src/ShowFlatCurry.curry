@@ -13,7 +13,7 @@
 --- generated from a FlatCurry program.
 ---
 --- @author Michael Hanus
---- @version Noember 2020
+--- @version November 2020
 ------------------------------------------------------------------------------
 
 module ShowFlatCurry
@@ -137,7 +137,7 @@ showInterfaceOpDecl (Op op InfixlOp prec) = "infixl "++show prec++" "++showOp op
 showInterfaceOpDecl (Op op InfixrOp prec) = "infixr "++show prec++" "++showOp op
 
 showOp :: (_,String) -> String
-showOp (_,on) = if isAlpha (head on) then '`':on++"`"
+showOp (_,on) = if isAlpha (head on) then '`' : on ++ "`"
                                      else on
 
 -- show type declaration if it is not a dictionary
@@ -176,10 +176,10 @@ showExportConsDecl tt (Cons (_,cname) _ _ argtypes) =
 showInterfaceFunc :: (QName -> String) -> Bool -> FuncDecl -> [String]
 showInterfaceFunc ttrans genstub (Func (_,fname) _ vis ftype _) =
   if vis==Public && not (classOperations fname)
-  then [showCurryId fname ++ " :: " ++
-        showCurryType ttrans False ftype ++
-        (if genstub then "\n" ++ showCurryId fname ++ " external\n" else "")]
-  else []
+    then [showCurryId fname ++ " :: " ++
+          showCurryType ttrans False ftype ++
+          (if genstub then "\n" ++ showCurryId fname ++ " external\n" else "")]
+    else []
  where
   classOperations fn = take 6 fn `elem` ["_impl#","_inst#"]
                     || take 5 fn == "_def#" || take 7 fn == "_super#"
@@ -191,7 +191,7 @@ showInterfaceFunc ttrans genstub (Func (_,fname) _ vis ftype _) =
 printCurryMod :: String -> IO ()
 printCurryMod progname =
   do modstring <- genCurryMod progname
-     putStrLn ("-- Program file: "++progname)
+     putStrLn ("-- Program file: " ++ progname)
      putStrLn modstring
 
 -- write representation into file:
@@ -199,9 +199,9 @@ writeCurryMod :: String -> String -> IO ()
 writeCurryMod targetfile progname =
   do modstring <- genCurryMod progname
      writeFile targetfile
-               ("--Program file: "++progname++"\n\n"++
+               ("--Program file: " ++ progname ++ "\n\n" ++
                 modstring)
-     putStrLn ("Module written into file \""++targetfile++"\"")
+     putStrLn ("Module written into file \"" ++ targetfile ++ "\"")
 
 -- generate a human-readable representation of a Curry module:
 genCurryMod :: String -> IO String
@@ -211,8 +211,8 @@ genCurryMod progname = do
 
 showCurryModule :: Prog -> String
 showCurryModule (Prog mod imports types funcs ops) = unlines $
-  ["module "++mod++"("++showTypeExports types ++
-   showFuncExports funcs++") where\n"] ++
+  ["module " ++ mod ++ "(" ++ showTypeExports types ++
+   showFuncExports funcs ++ ") where\n"] ++
   concatMap showInterfaceImport imports ++ [""] ++
   map showInterfaceOpDecl ops ++
   (if null ops then [] else [""]) ++
@@ -267,7 +267,7 @@ showCurryNewConsDecl tt (NewCons cname _ texp) =
 -- generate function definitions:
 showCurryFuncDecl :: (QName -> String) -> (QName -> String) -> FuncDecl -> String
 showCurryFuncDecl tt tf (Func fname _ _ ftype frule) =
-  showCurryId (snd fname) ++" :: "++ showCurryType tt False ftype ++ "\n" ++
+  showCurryId (snd fname) ++ " :: " ++ showCurryType tt False ftype ++ "\n" ++
   showCurryRule tf fname frule
 
 -- format rule as set of pattern matching rules:
@@ -309,11 +309,11 @@ rule2equations lhs rhs = case rhs of
 caseIntoLhs :: Expr -> Int -> [BranchExpr] -> [(Expr,Expr)]
 caseIntoLhs _ _ [] = []
 caseIntoLhs lhs vi (Branch (Pattern c vs) e : bs) =
-  rule2equations (substitute [vi] [shallowPattern2Expr c vs] lhs) e
-  ++ caseIntoLhs lhs vi bs
+  rule2equations (substitute [vi] [shallowPattern2Expr c vs] lhs) e ++
+  caseIntoLhs lhs vi bs
 caseIntoLhs lhs vi (Branch (LPattern lit) e : bs) =
-  rule2equations (substitute [vi] [Lit lit] lhs) e
-  ++ caseIntoLhs lhs vi bs
+  rule2equations (substitute [vi] [Lit lit] lhs) e ++
+  caseIntoLhs lhs vi bs
 
 shallowPattern2Expr :: QName -> [Int] -> Expr
 shallowPattern2Expr name vars =
