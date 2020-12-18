@@ -5,18 +5,13 @@
     "synopsis": "Library and tool to show FlatCurry programs in human-readable (Curry-like) form",
     "category": [ "Programming", "Metaprogramming" ],
     "dependencies": {
-        "flatcurry"    : ">= 3.0.0, < 4.0.0",
-        "wl-pprint"    : ">= 3.0.0, < 4.0.0",
-        "process"      : ">= 3.0.0, < 4.0.0",
+        "base"         : ">= 3.0.0, < 4.0.0",
+        "currypath"    : ">= 3.0.0, < 4.0.0",
         "directory"    : ">= 3.0.0, < 4.0.0",
         "filepath"     : ">= 3.0.0, < 4.0.0",
-        "currypath"    : ">= 3.0.0, < 4.0.0",
-        "distribution" : ">= 3.0.0, < 4.0.0",
-        "base"         : ">= 3.0.0, < 4.0.0"
-    },
-    "compilerCompatibility": {
-        "pakcs": ">= 3.0.0, < 4.0.0",
-        "kics2": ">= 3.0.0, < 4.0.0"
+        "flatcurry"    : ">= 3.0.0, < 4.0.0",
+        "process"      : ">= 3.0.0, < 4.0.0",
+        "wl-pprint"    : ">= 3.0.0, < 4.0.0"
     },
     "executable": {
         "name": "curry-showflat",
