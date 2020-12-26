@@ -23,16 +23,14 @@ module ShowFlatCurry
  ) where
 
 import Prelude     hiding ( empty )
-import Control.Monad      ( unless )
 import Data.Char          ( isAlpha )
 import Data.List          ( intercalate, sortBy )
-import System.Directory   ( doesFileExist, getCurrentDirectory
-                          , getModificationTime, setCurrentDirectory )
+import System.Directory   ( doesFileExist, getModificationTime )
 import System.FilePath    ( takeFileName, (</>) )
 import System.Process     ( system )
 import System.Environment ( getArgs )
-import System.CurryPath   ( modNameToPath, splitValidProgramName
-                          , lookupModuleSourceInLoadPath )
+import System.CurryPath   ( modNameToPath, lookupModuleSourceInLoadPath
+                          , runModuleAction )
 
 import FlatCurry.Types
 import FlatCurry.Files
@@ -46,23 +44,14 @@ main :: IO ()
 main = do
   args <- getArgs
   case args of
-    ["-mod",prog] -> runForProg printCurryMod prog
-    ["-int",prog] -> runForProg printInterface prog
-    ["-mod",prog,target] -> runForProg (writeCurryMod target) prog
-    ["-int",prog,target] -> runForProg (writeInterface target) prog
-    _ -> putStrLn $ "ERROR: Illegal arguments for genint: " ++
-                    intercalate " " args ++ "\n" ++
-                    "Usage: [-mod|-int] module_name [targetfile]"
-
-runForProg :: (String -> IO ()) -> String -> IO ()
-runForProg act progname = do
-  let (progdir,mname) = splitValidProgramName progname
-  curdir <- getCurrentDirectory
-  unless (progdir == ".") $ do
-    putStrLn $ "Switching to directory '" ++ progdir ++ "'..."
-    setCurrentDirectory progdir
-  act mname
-  unless (progdir == ".") $ setCurrentDirectory curdir
+    ["-mod",prog]        -> runModuleAction printCurryMod prog
+    ["-int",prog]        -> runModuleAction printInterface prog
+    ["-mod",prog,target] -> runModuleAction (writeCurryMod target) prog
+    ["-int",prog,target] -> runModuleAction (writeInterface target) prog
+    _                    -> putStrLn $
+                              "ERROR: Illegal arguments for genint: " ++
+                              unwords args ++ "\n" ++
+                              "Usage: [-mod|-int] modulename [targetfile]"
 
 -- print interface on stdout:
 printInterface :: String -> IO ()
