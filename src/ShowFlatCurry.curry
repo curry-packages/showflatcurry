@@ -13,7 +13,7 @@
 --- generated from a FlatCurry program.
 ---
 --- @author Michael Hanus
---- @version November 2020
+--- @version December 2020
 ------------------------------------------------------------------------------
 
 module ShowFlatCurry
@@ -22,35 +22,47 @@ module ShowFlatCurry
  , funcModule, leqFunc
  ) where
 
-import Prelude     hiding (empty)
-import Data.Char          (isAlpha)
-import Data.List          (intercalate, sortBy)
-import System.Directory   (doesFileExist, getModificationTime)
-import System.FilePath    (takeFileName, (</>))
-import System.Process     (system)
-import System.Environment (getArgs)
-import System.CurryPath   (stripCurrySuffix, modNameToPath
-                          ,lookupModuleSourceInLoadPath)
+import Prelude     hiding ( empty )
+import Control.Monad      ( unless )
+import Data.Char          ( isAlpha )
+import Data.List          ( intercalate, sortBy )
+import System.Directory   ( doesFileExist, getCurrentDirectory
+                          , getModificationTime, setCurrentDirectory )
+import System.FilePath    ( takeFileName, (</>) )
+import System.Process     ( system )
+import System.Environment ( getArgs )
+import System.CurryPath   ( modNameToPath, splitValidProgramName
+                          , lookupModuleSourceInLoadPath )
 
 import FlatCurry.Types
 import FlatCurry.Files
-import FlatCurry.Goodies  (funcName)
-import FlatCurry.Pretty   (Options (..), defaultOptions, ppProg, ppFuncDecl)
+import FlatCurry.Goodies  ( funcName )
+import FlatCurry.Pretty   ( Options (..), defaultOptions, ppProg, ppFuncDecl )
 import FlatCurry.Show
-import Text.Pretty        (pPrint)
+import Text.Pretty        ( pPrint )
 
 
 main :: IO ()
 main = do
   args <- getArgs
   case args of
-    ["-mod",mod] -> printCurryMod (stripCurrySuffix mod)
-    ["-int",mod] -> printInterface (stripCurrySuffix mod)
-    ["-mod",mod,target] -> writeCurryMod target (stripCurrySuffix mod)
-    ["-int",mod,target] -> writeInterface target (stripCurrySuffix mod)
+    ["-mod",prog] -> runForProg printCurryMod prog
+    ["-int",prog] -> runForProg printInterface prog
+    ["-mod",prog,target] -> runForProg (writeCurryMod target) prog
+    ["-int",prog,target] -> runForProg (writeInterface target) prog
     _ -> putStrLn $ "ERROR: Illegal arguments for genint: " ++
                     intercalate " " args ++ "\n" ++
                     "Usage: [-mod|-int] module_name [targetfile]"
+
+runForProg :: (String -> IO ()) -> String -> IO ()
+runForProg act progname = do
+  let (progdir,mname) = splitValidProgramName progname
+  curdir <- getCurrentDirectory
+  unless (progdir == ".") $ do
+    putStrLn $ "Switching to directory '" ++ progdir ++ "'..."
+    setCurrentDirectory progdir
+  act mname
+  unless (progdir == ".") $ setCurrentDirectory curdir
 
 -- print interface on stdout:
 printInterface :: String -> IO ()
