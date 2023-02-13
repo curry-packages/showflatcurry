@@ -13,11 +13,11 @@
 --- generated from a FlatCurry program.
 ---
 --- @author Michael Hanus
---- @version April 2021
+--- @version February 2023
 ------------------------------------------------------------------------------
 
 module FlatCurry.ShowIntMod
- ( showInterface, showCurryModule, showCurryFuncDecl
+ ( showInterface, showCurryModule, showCurryDataDecl, showCurryFuncDecl
  , showFlatCurry, showFuncDeclAsCurry, showFuncDeclAsFlatCurry
  , funcModule, leqFunc
  ) where
