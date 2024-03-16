@@ -4,6 +4,8 @@
     "author": "Michael Hanus <mh@informatik.uni-kiel.de>",
     "synopsis": "Library and tool to show FlatCurry programs in human-readable (Curry-like) form",
     "category": [ "Programming", "Metaprogramming" ],
+    "license": "BSD-3-Clause",
+    "licenseFile": "LICENSE",
     "dependencies": {
         "base"         : ">= 3.0.0, < 4.0.0",
         "currypath"    : ">= 3.0.0, < 4.0.0",
@@ -19,7 +21,7 @@
         "main": "ShowFlatCurry"
     },
     "source": {
-        "git": "https://git.ps.informatik.uni-kiel.de/curry-packages/showflatcurry.git",
+        "git": "https://github.com/curry-packages/showflatcurry.git",
         "tag": "$version"
     }
 }
