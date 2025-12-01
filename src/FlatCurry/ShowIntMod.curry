@@ -13,7 +13,7 @@
 --- generated from a FlatCurry program.
 ---
 --- @author Michael Hanus
---- @version February 2023
+--- @version November 2025
 ------------------------------------------------------------------------------
 
 module FlatCurry.ShowIntMod
@@ -179,8 +179,8 @@ showCurryRule tf fname (Rule lhs rhs) =
 
 splitFreeVars :: Expr -> ([Int],Expr)
 splitFreeVars exp = case exp of
-  Free vars e -> (vars,e)
-  _ -> ([],exp)
+  Free vars e -> (map fst vars, e)
+  _           -> ([],exp)
 
 showCurryPatternRule :: (QName -> String) -> Expr -> Expr -> String
 showCurryPatternRule tf l r = let (vars,e) = splitFreeVars r in
@@ -245,10 +245,10 @@ substituteAll _  _  _ (Lit l) = Lit l
 substituteAll vs es b (Comb combtype c exps) =
                  Comb combtype c (map (substituteAll vs es b) exps)
 substituteAll vs es b (Let bindings exp) =
-                 Let (map (\(x,e)->(x+b,substituteAll vs es b e)) bindings)
+                 Let (map (\(x,t,e)->(x+b,t,substituteAll vs es b e)) bindings)
                      (substituteAll vs es b exp)
 substituteAll vs es b (Free vars e) =
-                 Free (map (+b) vars) (substituteAll vs es b e)
+                 Free (map (\(v,t) -> (v+b,t)) vars) (substituteAll vs es b e)
 substituteAll vs es b (Or e1 e2) =
                  Or (substituteAll vs es b e1) (substituteAll vs es b e2)
 substituteAll vs es b (Case ctype e cases) =
